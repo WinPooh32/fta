@@ -38,3 +38,21 @@ func KST(column series.Data, r1, r2, r3, r4 int) (k, signal series.Data) {
 
 	return k, signal
 }
+
+// Fisher Transform was presented by John Ehlers.
+// It assumes that price distributions behave like square waves.
+func FISH(low, high series.Data, period int, adjust bool) (fish series.Data) {
+	var (
+		med      = high.Clone().Add(low).MulScalar(0.5)
+		ndaylow  = med.Rolling(period).Min()
+		ndayhigh = med.Rolling(period).Max()
+		raw      = med.Sub(ndaylow).Div(ndayhigh.Sub(ndaylow)).MulScalar(2).SubScalar(1)
+		smooth   = raw.EWM(series.AlphaSpan, 5, adjust, false).Mean().Fillna(0, true)
+
+		a   = smooth.Clone().AddScalar(1)       // 1 + smooth
+		b   = smooth.MulScalar(-1).AddScalar(1) // 1 - smooth
+		log = a.Div(b).Log()
+	)
+	fish = log.EWM(series.AlphaSpan, 3, adjust, false).Mean()
+	return
+}
