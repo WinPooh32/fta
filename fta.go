@@ -86,3 +86,13 @@ func MACD(
 
 	return macd, macdSignal
 }
+
+// Developed by John Bollinger, Bollinger Bands® are volatility bands placed above and below a moving average.
+// Volatility is based on the standard deviation, which changes as volatility increases and decreases.
+// The bands automatically widen when volatility increases and narrow when volatility decreases.
+func BBANDS(column series.Data, sma series.Data, period int, stdMultiplier float32) (upper, lower series.Data) {
+	var std = column.Rolling(period).Std().MulScalar(stdMultiplier)
+	upper = sma.Clone().Add(std.Clone())
+	lower = sma.Clone().Sub(std)
+	return
+}
