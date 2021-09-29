@@ -89,3 +89,11 @@ func BBANDS(column series.Data, ma series.Data, period int, stdMultiplier float3
 	lower = ma.Clone().Sub(std)
 	return
 }
+
+// %b (pronounced 'percent b') is derived from the formula for Stochastics and shows where price is in relation to the bands.
+// %b equals 1 at the upper band and 0 at the lower band.
+func PercentB(column series.Data, ma series.Data, period int, stdMultiplier float32) (percentB series.Data) {
+	var bbLower, bbUpper = BBANDS(column, ma, period, stdMultiplier)
+	percentB = column.Clone().Sub(bbLower).Div(bbUpper.Sub(bbLower))
+	return
+}
