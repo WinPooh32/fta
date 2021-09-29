@@ -68,14 +68,7 @@ func FISH(low, high series.Data, period int, adjust bool) (fish series.Data) {
 // As a moving average of the indicator, it trails the MACD and makes it easier to spot MACD turns.
 // A bullish crossover occurs when the MACD turns up and crosses above the signal line.
 // A bearish crossover occurs when the MACD turns down and crosses below the signal line.
-func MACD(
-	column series.Data,
-	periodFast float32,
-	periodSlow float32,
-	signal float32,
-	adjust bool,
-) (macd, macdSignal series.Data) {
-
+func MACD(column series.Data, periodFast float32, periodSlow float32, signal float32, adjust bool) (macd, macdSignal series.Data) {
 	var (
 		emaFast = column.EWM(series.AlphaSpan, periodFast, adjust, false).Mean()
 		emaSlow = column.EWM(series.AlphaSpan, periodSlow, adjust, false).Mean()
