@@ -1,6 +1,8 @@
 package fta
 
-import "github.com/WinPooh32/series"
+import (
+	"github.com/WinPooh32/series"
+)
 
 // Simple moving average - rolling mean in pandas lingo. Also known as 'MA'.
 // The simple moving average (SMA) is the most basic of the moving averages used for trading.
@@ -135,4 +137,40 @@ func RSI(column series.Data, period int, adjust bool) (rsi series.Data) {
 	})
 
 	return rsi
+}
+
+// Connors RSI (CRSI) is a technical analysis indicator created by Larry Connors that is actually a composite of three separate components.
+// The Relative Strength Index (RSI), developed by J. Welles Wilder, plays an integral role in Connors RSI.
+// Connors RSI outputs a value between 0 and 100, which is then used to identify short-term overbought and oversold conditions.
+func CRSI(close series.Data, period int, periodUpDown int, periodrRoc int, adjust bool) (crsi series.Data) {
+	var streak float32
+	var updown = close.Rolling(2).Diff().Apply(func(v float32) float32 {
+		switch {
+		case v > 0:
+			if streak <= 0 {
+				streak = 1
+			} else {
+				streak++
+			}
+		case v < 0:
+			if streak >= 0 {
+				streak = -1
+			} else {
+				streak--
+			}
+		default:
+			streak = 0
+		}
+		return streak
+	})
+
+	var (
+		rsi       = RSI(close, period, true)
+		rsiUpDown = RSI(updown, periodUpDown, true)
+		roc       = ROC(close, periodrRoc).Fillna(0, true)
+	)
+
+	crsi = rsi.Add(rsiUpDown).Add(roc).DivScalar(3)
+
+	return crsi
 }
