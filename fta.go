@@ -86,10 +86,10 @@ func MACD(column series.Data, periodFast float32, periodSlow float32, signal flo
 // Volatility is based on the standard deviation, which changes as volatility increases and decreases.
 // The bands automatically widen when volatility increases and narrow when volatility decreases.
 func BBANDS(column series.Data, ma series.Data, period int, stdMultiplier float32) (upper, lower series.Data) {
-	var std = column.Rolling(period).Std().MulScalar(stdMultiplier)
-	upper = ma.Clone().Add(std.Clone())
+	var std = column.Rolling(period).Std().Fillna(0, true).MulScalar(stdMultiplier)
+	upper = ma.Clone().Add(std)
 	lower = ma.Clone().Sub(std)
-	return
+	return upper, lower
 }
 
 // %b (pronounced 'percent b') is derived from the formula for Stochastics and shows where price is in relation to the bands.
