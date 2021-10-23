@@ -6,17 +6,19 @@ import (
 
 // Simple moving average - rolling mean in pandas lingo. Also known as 'MA'.
 // The simple moving average (SMA) is the most basic of the moving averages used for trading.
-func SMA(column series.Data, period int) series.Data {
-	return column.Rolling(period).Mean()
+func SMA(column series.Data, period int) (sma series.Data) {
+	sma = column.Rolling(period).Mean()
+	return sma
 }
 
 // The Rate-of-Change (ROC) indicator, which is also referred to as simply Momentum,
 // is a pure momentum oscillator that measures the percent change in price from one period to the next.
 // The ROC calculation compares the current price with the price “n” periods ago.
-func ROC(column series.Data, period int) series.Data {
+func ROC(column series.Data, period int) (roc series.Data) {
 	diff := column.Rolling(period).Diff()
 	shift := column.Rolling(period).Shift()
-	return diff.Div(shift).MulScalar(100)
+	roc = diff.Div(shift).MulScalar(100)
+	return roc
 }
 
 // Know Sure Thing (KST) is a momentum oscillator based on the smoothed rate-of-change for four different time frames.
@@ -56,7 +58,7 @@ func FISH(low, high series.Data, period int, adjust bool) (fish series.Data) {
 		log = a.Div(b).Log()
 	)
 	fish = log.EWM(series.AlphaSpan, 3, adjust, false).Mean()
-	return
+	return fish
 }
 
 // MACD, MACD Signal and MACD difference.
@@ -97,7 +99,7 @@ func BBANDS(column series.Data, ma series.Data, period int, stdMultiplier float3
 func PercentB(column series.Data, ma series.Data, period int, stdMultiplier float32) (percentB series.Data) {
 	var bbLower, bbUpper = BBANDS(column, ma, period, stdMultiplier)
 	percentB = column.Clone().Sub(bbLower).Div(bbUpper.Sub(bbLower))
-	return
+	return percentB
 }
 
 // Relative Strength Index (RSI) is a momentum oscillator that measures the speed and change of price movements.
