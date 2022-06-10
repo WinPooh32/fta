@@ -20,6 +20,14 @@ func SMM(column series.Data, period int) (smm series.Data) {
 	return smm
 }
 
+// Smoothed simple moving average.
+func SSMA(column series.Data, period int, adjust bool) (ssma series.Data) {
+	ssma = column.
+		EWM(series.Alpha, 1/DType(period), adjust, false).
+		Mean()
+	return ssma
+}
+
 // The Rate-of-Change (ROC) indicator, which is also referred to as simply Momentum,
 // is a pure momentum oscillator that measures the percent change in price from one period to the next.
 // The ROC calculation compares the current price with the price “n” periods ago.

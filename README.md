@@ -11,6 +11,7 @@ Port of Python library [peerchemist/finta](https://github.com/peerchemist/finta)
 
 - **SMA** (Simple moving average)
 - **SMM** (Simple moving median)
+- **SSMA** (Smoothed simple moving average)
 - **ROC** (The Rate-of-Change)
 - **KST** (Know Sure Thing)
 - **FISH** (Fisher Transform)
