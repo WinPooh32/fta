@@ -7,9 +7,10 @@ Financial technical indicators implemented in Go.
 
 Port of Python library [peerchemist/finta](https://github.com/peerchemist/finta)
 
-# Implemented indicators
+## Implemented indicators
 
 - **SMA** (Simple moving average)
+- **SMM** (Simple moving median)
 - **ROC** (The Rate-of-Change)
 - **KST** (Know Sure Thing)
 - **FISH** (Fisher Transform)

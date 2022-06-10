@@ -13,6 +13,13 @@ func SMA(column series.Data, period int) (sma series.Data) {
 	return sma
 }
 
+// Simple moving median, an alternative to moving average. SMA, when used to estimate the underlying trend in a time series,
+// is susceptible to rare events such as rapid shocks or other anomalies. A more robust estimate of the trend is the simple moving median over n time periods.
+func SMM(column series.Data, period int) (smm series.Data) {
+	smm = column.Rolling(period).Median()
+	return smm
+}
+
 // The Rate-of-Change (ROC) indicator, which is also referred to as simply Momentum,
 // is a pure momentum oscillator that measures the percent change in price from one period to the next.
 // The ROC calculation compares the current price with the price “n” periods ago.
