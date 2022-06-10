@@ -28,6 +28,16 @@ func SSMA(column series.Data, period int, adjust bool) (ssma series.Data) {
 	return ssma
 }
 
+// Exponential Weighted Moving Average - Like all moving average indicators, they are much better suited for trending markets.
+// When the market is in a strong and sustained uptrend, the EMA indicator line will also show an uptrend and vice-versa for a down trend.
+// EMAs are commonly used in conjunction with other indicators to confirm significant market moves and to gauge their validity.
+func EMA(column series.Data, period int, adjust bool) (ema series.Data) {
+	ema = column.
+		EWM(series.AlphaSpan, DType(period), adjust, false).
+		Mean()
+	return ema
+}
+
 // The Rate-of-Change (ROC) indicator, which is also referred to as simply Momentum,
 // is a pure momentum oscillator that measures the percent change in price from one period to the next.
 // The ROC calculation compares the current price with the price “n” periods ago.
