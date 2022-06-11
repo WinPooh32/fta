@@ -2,6 +2,7 @@ package fta
 
 import (
 	"github.com/WinPooh32/series"
+	"github.com/WinPooh32/series/math"
 )
 
 type DType = series.DType
@@ -63,6 +64,25 @@ func WMA(column series.Data, period int) (wma series.Data) {
 	wma = column.Rolling(period).Apply(fn)
 
 	return wma
+}
+
+// HMA indicator is a common abbreviation of Hull Moving Average.
+// The average was developed by Allan Hull and is used mainly to identify the current market trend.
+// Unlike SMA (simple moving average) the curve of Hull moving average is considerably smoother.
+// Moreover, because its aim is to minimize the lag between HMA and price it does follow the price activity much closer.
+// It is used especially for middle-term and long-term trading.
+func HMA(column series.Data, period int) (hma series.Data) {
+	halfLength := period / 2
+	sqrtLength := int(math.Sqrt(DType(period)))
+
+	wmaf := WMA(column.Clone(), halfLength)
+	wmas := WMA(column.Clone(), period)
+
+	deltawma := wmaf.MulScalar(2).Sub(wmas)
+
+	hma = WMA(deltawma, sqrtLength)
+
+	return hma
 }
 
 // The Rate-of-Change (ROC) indicator, which is also referred to as simply Momentum,
