@@ -255,3 +255,25 @@ func CRSI(close series.Data, period int, periodUpDown int, periodrRoc int, adjus
 
 	return crsi
 }
+
+// 	VZO uses price, previous price and moving averages to compute its oscillating value.
+// 	It is a leading indicator that calculates buy and sell signals based on oversold / overbought conditions.
+// 	Oscillations between the 5% and 40% levels mark a bullish trend zone, while oscillations between -40% and 5% mark a bearish trend zone.
+// 	Meanwhile, readings above 40% signal an overbought condition, while readings above 60% signal an extremely overbought condition.
+// 	Alternatively, readings below -40% indicate an oversold condition, which becomes extremely oversold below -60%.
+func VZO(price, volume series.Data, period int, adjust bool) (vzo series.Data) {
+	sign := func(x DType) DType {
+		return math.Copysign(1, x)
+	}
+
+	v := price.Clone().
+		Diff(1).Apply(sign).
+		Mul(volume)
+
+	dvma := v.EWM(series.AlphaSpan, DType(period), adjust, false).Mean()
+	vma := volume.Clone().EWM(series.AlphaSpan, DType(period), adjust, false).Mean()
+
+	vzo = dvma.MulScalar(100).Div(vma)
+
+	return vzo
+}
