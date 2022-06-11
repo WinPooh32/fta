@@ -38,6 +38,33 @@ func EMA(column series.Data, period int, adjust bool) (ema series.Data) {
 	return ema
 }
 
+// WMA stands for weighted moving average. It helps to smooth the price curve for better trend identification.
+// It places even greater importance on recent data than the EMA does.
+func WMA(column series.Data, period int) (wma series.Data) {
+	denominator := DType(period*(period+1)) / 2.0
+
+	weights := series.MakeValues(make([]DType, period))
+	for i, w := 0, weights.Values(); i < len(w); i++ {
+		w[i] = DType(i + 1)
+	}
+
+	// Reduce allocations and use temporary array for inplace operations.
+	tmp := series.MakeValues(make([]series.DType, 0, period))
+
+	fn := func(data series.Data) series.DType {
+		if size := len(data.Values()); size < period {
+			weights = weights.Slice(0, size)
+		}
+		// Make copy of data to tmp.
+		tmp = tmp.Slice(0, 0).Append(data)
+		return series.Sum(tmp.Mul(weights)) / denominator
+	}
+
+	wma = column.Rolling(period).Apply(fn)
+
+	return wma
+}
+
 // The Rate-of-Change (ROC) indicator, which is also referred to as simply Momentum,
 // is a pure momentum oscillator that measures the percent change in price from one period to the next.
 // The ROC calculation compares the current price with the price “n” periods ago.
