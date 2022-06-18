@@ -277,3 +277,46 @@ func VZO(price, volume series.Data, period int, adjust bool) (vzo series.Data) {
 
 	return vzo
 }
+
+// Stochastic oscillator %K
+// The stochastic oscillator is a momentum indicator comparing the closing price of a security
+// to the range of its prices over a certain period of time.
+// The sensitivity of the oscillator to market movements is reducible by adjusting that time
+// period or by taking a moving average of the result.
+func STOCH(high, low, close series.Data, period int) (stoch series.Data) {
+	close = close.Clone()
+
+	highestHigh := high.Rolling(period).Max()
+	lowestLow := low.Rolling(period).Min()
+
+	stoch = close.
+		Sub(lowestLow).
+		Div(
+			highestHigh.Sub(lowestLow),
+		)
+
+	return stoch
+}
+
+// Stochastic oscillator %D
+// STOCH%D is a 3 period simple moving average of %K.
+func STOCHD(high, low, close series.Data, period int) (stochd series.Data) {
+	return STOCH(high, low, close, period).Rolling(period).Mean()
+}
+
+// StochRSI is an oscillator that measures the level of RSI relative to its high-low range over a set time period.
+// StochRSI applies the Stochastics formula to RSI values, instead of price values. This makes it an indicator of an indicator.
+// The result is an oscillator that fluctuates between 0 and 1.
+func StochRSI(price series.Data, rsiPeriod, stochPeriod int, adjust bool) (stochRSI series.Data) {
+	rsi := RSI(price, rsiPeriod, adjust)
+	min := series.Min(rsi)
+	max := series.Max(rsi)
+
+	stochRSI = rsi.
+		SubScalar(min).
+		DivScalar(max - min).
+		Rolling(stochPeriod).
+		Mean()
+
+	return stochRSI
+}
