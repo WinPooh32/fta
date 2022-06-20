@@ -1,3 +1,5 @@
+![logo](logo.png "Cool Gopher")
+
 # FTA
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/WinPooh32/fta)](https://goreportcard.com/report/github.com/WinPooh32/fta)
