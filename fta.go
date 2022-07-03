@@ -320,3 +320,32 @@ func StochRSI(price series.Data, rsiPeriod, stochPeriod int, adjust bool) (stoch
 
 	return stochRSI
 }
+
+// The accumulation/distribution line was created by Marc Chaikin to determine the flow of money into or out of a security.
+// It should not be confused with the advance/decline line. While their initials might be the same, these are entirely different indicators,
+// and their uses are different as well. Whereas the advance/decline line can provide insight into market movements,
+// the accumulation/distribution line is of use to traders looking to measure buy/sell pressure on a security or confirm the strength of a trend.
+func ADL(high, low, close series.Data) (adl series.Data) {
+	subCloseLow := close.Clone().Sub(low)
+	subHighClose := high.Clone().Sub(close)
+	subHighLow := high.Clone().Sub(low)
+
+	mfv := subCloseLow.Sub(subHighClose).Div(subHighLow)
+
+	return mfv.Cumsum()
+}
+
+// Chaikin Oscillator, named after its creator, Marc Chaikin, the Chaikin oscillator is an oscillator that measures the accumulation/distribution
+// line of the moving average convergence divergence (MACD). The Chaikin oscillator is calculated by subtracting a 10-day exponential moving average (EMA)
+// of the accumulation/distribution line from a three-day EMA of the accumulation/distribution line, and highlights the momentum implied by the
+// accumulation/distribution line.
+func CHAIKIN(high, low, close series.Data, adjust bool) (chaikin series.Data) {
+	adl := ADL(high, low, close)
+
+	short := adl.EWM(series.AlphaSpan, 3, adjust, false).Mean()
+	long := adl.EWM(series.AlphaSpan, 10, adjust, false).Mean()
+
+	chaikin = short.Sub(long)
+
+	return chaikin
+}
