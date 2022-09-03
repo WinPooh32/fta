@@ -40,10 +40,11 @@ func (ohlcv OHLCV) Resample(interval int64) OHLCV {
 	}
 }
 
+
 // ReadCSV parses ohlcv from csv reader.
 // The columns are read at this order: Time Open High Low Close Volume.
-// Time is expected to be in seconds from January 1st, 1970 at UTC.
-func ReadCSV(reader *csv.Reader) (ohlcv OHLCV, err error) {
+// freq is a sample size, usually it's time.Second or time.Millisecond.
+func ReadCSV(reader *csv.Reader, freq int64) (ohlcv OHLCV, err error) {
 	const (
 		Time = iota
 		Open
