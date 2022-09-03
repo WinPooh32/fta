@@ -6,11 +6,12 @@ import (
 	"fmt"
 	"io"
 	"strconv"
-	"time"
 
 	"github.com/WinPooh32/series"
 )
 
+// OHLCV is a data frame of open, high, close, volume columns.
+// Implements github.com/pplcc/plotext.TOHLCVer interface.
 type OHLCV struct{ Open, High, Low, Close, Volume series.Data }
 
 // Clone returns full copy of ohlcv.
@@ -40,6 +41,21 @@ func (ohlcv OHLCV) Resample(interval int64) OHLCV {
 	}
 }
 
+// Len returns the number of time, open, high, low, close, volume tuples.
+func (ohlcv OHLCV) Len() int {
+	return ohlcv.Open.Len()
+}
+
+// TOHLCV returns an time, open, high, low, close, volume tuple.
+func (ohlcv OHLCV) TOHLCV(i int) (t float64, o float64, h float64, l float64, c float64, v float64) {
+	t = float64(ohlcv.Open.Index()[i])
+	o = float64(ohlcv.Open.At(i))
+	h = float64(ohlcv.High.At(i))
+	l = float64(ohlcv.Low.At(i))
+	c = float64(ohlcv.Close.At(i))
+	v = float64(ohlcv.Volume.At(i))
+	return
+}
 
 // ReadCSV parses ohlcv from csv reader.
 // The columns are read at this order: Time Open High Low Close Volume.
@@ -110,8 +126,6 @@ func ReadCSV(reader *csv.Reader, freq int64) (ohlcv OHLCV, err error) {
 		C = append(C, DType(c))
 		V = append(V, DType(v))
 	}
-
-	const freq = int64(time.Second)
 
 	ohlcv = OHLCV{
 		Open:   series.MakeData(freq, T, O),
