@@ -1,6 +1,6 @@
-![logo](logo.png "Cool Gopher")
-
 # FTA
+
+![logo](examples/render-plots/bbands.png "BBands plot")
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/WinPooh32/fta)](https://goreportcard.com/report/github.com/WinPooh32/fta)
 [![Go Reference](https://pkg.go.dev/badge/github.com/WinPooh32/fta.svg)](https://pkg.go.dev/github.com/WinPooh32/fta)
