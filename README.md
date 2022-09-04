@@ -9,6 +9,13 @@ Financial technical indicators implemented in Go.
 
 Port of Python library [peerchemist/finta](https://github.com/peerchemist/finta)
 
+## Drawing plots
+
+Compatable with gonum's plot interfaces. You can check these plotters:
+
+* [gonum/plot](https://github.com/gonum/plot)
+* [go-hep/hep](https://github.com/go-hep/hep/tree/main/hplot)
+* [pplcc/plotext](https://github.com/pplcc/plotext)
 
 ## Implemented indicators
 
