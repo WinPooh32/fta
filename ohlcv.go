@@ -41,6 +41,17 @@ func (ohlcv OHLCV) Resample(interval int64) OHLCV {
 	}
 }
 
+// Slice slices ohlcv frame.
+func (ohlcv OHLCV) Slice(begin, end int) OHLCV {
+	return OHLCV{
+		Open:   ohlcv.Open.Slice(begin, end),
+		High:   ohlcv.High.Slice(begin, end),
+		Low:    ohlcv.Low.Slice(begin, end),
+		Close:  ohlcv.Close.Slice(begin, end),
+		Volume: ohlcv.Volume.Slice(begin, end),
+	}
+}
+
 // Len returns the number of time, open, high, low, close, volume tuples.
 func (ohlcv OHLCV) Len() int {
 	return ohlcv.Open.Len()
