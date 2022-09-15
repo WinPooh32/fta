@@ -97,10 +97,10 @@ func newReader(file string) *csv.Reader {
 func readOHLCV(file string) fta.OHLCV {
 	csvReader := newReader(file)
 
-	ohlcv, err := fta.ReadCSV(csvReader, int64(time.Second))
+	ohlcv, err := fta.ReadCSV(csvReader, int64(time.Minute), fta.Seconds)
 	checkErr(err)
 
-	ohlcv = ohlcv.Resample(int64(time.Hour / time.Second))
+	ohlcv = ohlcv.Resample(int64(time.Hour))
 
 	return ohlcv
 }
