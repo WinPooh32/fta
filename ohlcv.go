@@ -67,7 +67,7 @@ func (ohlcv OHLCV) Len() int {
 
 // TOHLCV returns an time, open, high, low, close, volume tuple.
 func (ohlcv OHLCV) TOHLCV(i int) (t float64, o float64, h float64, l float64, c float64, v float64) {
-	t = float64(ohlcv.Open.Index()[i])
+	t = float64(ohlcv.Open.Index()[i] / int64(time.Second))
 	o = float64(ohlcv.Open.At(i))
 	h = float64(ohlcv.High.At(i))
 	l = float64(ohlcv.Low.At(i))
