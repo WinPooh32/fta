@@ -6,8 +6,16 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"time"
 
 	"github.com/WinPooh32/series"
+)
+
+type UnixTime int
+
+const (
+	Seconds UnixTime = iota
+	Milliseconds
 )
 
 // OHLCV is a data frame of open, high, close, volume columns.
@@ -71,7 +79,7 @@ func (ohlcv OHLCV) TOHLCV(i int) (t float64, o float64, h float64, l float64, c 
 // ReadCSV parses ohlcv from csv reader.
 // The columns are read at this order: Time Open High Low Close Volume.
 // freq is a sample size, usually it's time.Second or time.Millisecond.
-func ReadCSV(reader *csv.Reader, freq int64) (ohlcv OHLCV, err error) {
+func ReadCSV(reader *csv.Reader, freq int64, unixTime UnixTime) (ohlcv OHLCV, err error) {
 	const (
 		Time = iota
 		Open
@@ -128,6 +136,13 @@ func ReadCSV(reader *csv.Reader, freq int64) (ohlcv OHLCV, err error) {
 		v, err := strconv.ParseFloat(record[Volume], 64)
 		if err != nil {
 			return ohlcv, fmt.Errorf("parse float: field 'Volume': %w", err)
+		}
+
+		switch unixTime {
+		case Seconds:
+			ts *= int64(time.Second)
+		case Milliseconds:
+			ts *= int64(time.Millisecond)
 		}
 
 		T = append(T, ts)
