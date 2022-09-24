@@ -40,6 +40,17 @@ func (ohlcv OHLCV) Resample(interval int64) OHLCV {
 
 	ohlcv = ohlcv.Clone()
 
+	if interval < ohlcv.Close.Freq() {
+		// Upsample series.
+		return OHLCV{
+			Open:   ohlcv.Open.Resample(interval, origin).Interpolate(series.InterpolationLinear),
+			High:   ohlcv.High.Resample(interval, origin).Interpolate(series.InterpolationLinear),
+			Low:    ohlcv.Low.Resample(interval, origin).Interpolate(series.InterpolationLinear),
+			Close:  ohlcv.Close.Resample(interval, origin).Interpolate(series.InterpolationLinear),
+			Volume: ohlcv.Volume.Resample(interval, origin).Interpolate(series.InterpolationLinear),
+		}
+	}
+
 	return OHLCV{
 		Open:   ohlcv.Open.Resample(interval, origin).First(),
 		High:   ohlcv.High.Resample(interval, origin).Max(),
