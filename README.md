@@ -39,3 +39,4 @@ Compatable with gonum's plot interfaces. You can check these plotters:
 * **ADL** (Accumulation/Distribution Line)
 * **CHAIKIN** (Chaikin Oscillator)
 * **VZO** (Volume Zone Oscillator)
+* **PSAR** (Parabolic Stop and Reverse)
