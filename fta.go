@@ -349,3 +349,92 @@ func CHAIKIN(high, low, close series.Data, adjust bool) (chaikin series.Data) {
 
 	return chaikin
 }
+
+// The parabolic SAR indicator, developed by J. Wells Wilder, is used by traders to determine trend direction and potential reversals in price.
+// The indicator uses a trailing stop and reverse method called "SAR," or stop and reverse, to identify suitable exit and entry points.
+// Traders also refer to the indicator as the parabolic stop and reverse, parabolic SAR, or PSAR.
+// https://www.investopedia.com/terms/p/parabolicindicator.asp
+// https://virtualizedfrog.wordpress.com/2014/12/09/parabolic-sar-implementation-in-python/
+func PSAR(high, low, close series.Data, iaf float64, maxaf float64) (psarSeries, bullSeries, bearSeries series.Data) {
+	length := close.Len()
+
+	highValues := high.Values()
+	lowValues := low.Values()
+
+	psar := append([]DType(nil), close.Values()...)
+	psarBull := make([]DType, length)
+	psarBear := make([]DType, length)
+
+	bull := true
+	af := iaf
+	hp := highValues[0]
+	lp := lowValues[0]
+
+	for i := 2; i < length; i++ {
+		if bull {
+			psar[i] = psar[i-1] + af*(hp-psar[i-1])
+		} else {
+			psar[i] = psar[i-1] + af*(lp-psar[i-1])
+		}
+
+		reverse := false
+
+		if bull {
+			if lowValues[i] < psar[i] {
+				bull = false
+				reverse = true
+				psar[i] = hp
+				lp = lowValues[i]
+				af = iaf
+			}
+		} else {
+			if highValues[i] > psar[i] {
+				bull = true
+				reverse = true
+				psar[i] = lp
+				hp = highValues[i]
+				af = iaf
+			}
+		}
+
+		if !reverse {
+			if bull {
+				if highValues[i] > hp {
+					hp = highValues[i]
+					af = math.Min(af+iaf, maxaf)
+				}
+				if lowValues[i-1] < psar[i] {
+					psar[i] = lowValues[i-1]
+				}
+				if lowValues[i-2] < psar[i] {
+					psar[i] = lowValues[i-2]
+				}
+			} else {
+				if lowValues[i] < lp {
+					lp = lowValues[i]
+					af = math.Min(af+iaf, maxaf)
+				}
+				if highValues[i-1] > psar[i] {
+					psar[i] = highValues[i-1]
+				}
+				if highValues[i-2] > psar[i] {
+					psar[i] = highValues[i-2]
+				}
+			}
+		}
+
+		if bull {
+			psarBull[i] = psar[i]
+		} else {
+			psarBear[i] = psar[i]
+		}
+	}
+
+	index := append([]int64(nil), close.Index()...)
+
+	psarSeries = series.MakeData(close.Freq(), index, psar)
+	bullSeries = series.MakeData(close.Freq(), index, psarBull)
+	bearSeries = series.MakeData(close.Freq(), index, psarBear)
+
+	return psarSeries, bullSeries, bearSeries
+}
