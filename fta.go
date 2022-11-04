@@ -148,12 +148,12 @@ func FISH(low, high series.Data, period int, adjust bool) (fish series.Data) {
 // A bearish crossover occurs when the MACD turns down and crosses below the signal line.
 func MACD(column series.Data, periodFast float64, periodSlow float64, signal float64, adjust bool) (macd, macdSignal series.Data) {
 	var (
-		emaFast = column.EWM(series.AlphaSpan, periodFast, adjust, false).Mean()
-		emaSlow = column.EWM(series.AlphaSpan, periodSlow, adjust, false).Mean()
+		emaFast = column.EWM(series.AlphaSpan, DType(periodFast), adjust, false).Mean()
+		emaSlow = column.EWM(series.AlphaSpan, DType(periodSlow), adjust, false).Mean()
 	)
 
 	macd = emaFast.Sub(emaSlow)
-	macdSignal = macd.EWM(series.AlphaSpan, signal, adjust, false).Mean()
+	macdSignal = macd.EWM(series.AlphaSpan, DType(signal), adjust, false).Mean()
 
 	return macd, macdSignal
 }
@@ -204,8 +204,8 @@ func RSI(column series.Data, period int, adjust bool) (rsi series.Data) {
 
 	var (
 		alphaParam = 1.0 / float64(period)
-		gain       = up.EWM(series.Alpha, alphaParam, adjust, true).Mean()
-		loss       = down.Abs().EWM(series.Alpha, alphaParam, adjust, true).Mean()
+		gain       = up.EWM(series.Alpha, DType(alphaParam), adjust, true).Mean()
+		loss       = down.Abs().EWM(series.Alpha, DType(alphaParam), adjust, true).Mean()
 
 		rs = gain.Div(loss).Fillna(0)
 	)
