@@ -366,7 +366,7 @@ func PSAR(high, low, close series.Data, iaf float64, maxaf float64) (psarSeries,
 	psarBear := make([]DType, length)
 
 	bull := true
-	af := iaf
+	af := DType(iaf)
 	hp := highValues[0]
 	lp := lowValues[0]
 
@@ -385,7 +385,7 @@ func PSAR(high, low, close series.Data, iaf float64, maxaf float64) (psarSeries,
 				reverse = true
 				psar[i] = hp
 				lp = lowValues[i]
-				af = iaf
+				af = DType(iaf)
 			}
 		} else {
 			if highValues[i] > psar[i] {
@@ -393,7 +393,7 @@ func PSAR(high, low, close series.Data, iaf float64, maxaf float64) (psarSeries,
 				reverse = true
 				psar[i] = lp
 				hp = highValues[i]
-				af = iaf
+				af = DType(iaf)
 			}
 		}
 
@@ -401,7 +401,7 @@ func PSAR(high, low, close series.Data, iaf float64, maxaf float64) (psarSeries,
 			if bull {
 				if highValues[i] > hp {
 					hp = highValues[i]
-					af = math.Min(af+iaf, maxaf)
+					af = math.Min(af+DType(iaf), DType(maxaf))
 				}
 				if lowValues[i-1] < psar[i] {
 					psar[i] = lowValues[i-1]
@@ -412,7 +412,7 @@ func PSAR(high, low, close series.Data, iaf float64, maxaf float64) (psarSeries,
 			} else {
 				if lowValues[i] < lp {
 					lp = lowValues[i]
-					af = math.Min(af+iaf, maxaf)
+					af = math.Min(af+DType(iaf), DType(maxaf))
 				}
 				if highValues[i-1] > psar[i] {
 					psar[i] = highValues[i-1]
